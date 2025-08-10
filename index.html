@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>数织 黑格子规律</title>
+
+    <style>
+        .container {
+            width: 100%;
+            padding: 20px;
+        }
+        .slider-container {
+            width: 400px; /* 固定进度条容器宽度 */
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        .slider {
+            width: 100%; /* 进度条占满容器 */
+            margin: 10px 0;
+        }
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center; /* 方格居中 */
+            max-width: 100%; /* 格子容器响应式 */
+        }
+        .grid-item {
+            width: 50px;
+            height: 50px;
+            background-color: #ccc;
+            border: 1px solid #999;
+            transition: background-color 0.3s;
+        }
+        .left-color {
+            background-color: #ff6b6b; /* 左侧染色颜色（红色） */
+        }
+        .right-color {
+            background-color: #4ecdc4; /* 右侧染色颜色（青色） */
+        }
+        .mixed-color {
+            background-color: #ffd166; /* 混合色（黄色） */
+        }
+        .stats {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slider-container">
+            <input type="range" min="1" max="20" value="5" class="slider" id="gridSlider">
+            <p>宽度 n = <span id="gridCount">5</span></p>
+            
+            <input type="range" min="0" max="20" value="0" class="slider" id="colorSlider">
+            <p>数字 m = <span id="colorCount">0</span></p>
+        </div>
+        
+        <div class="stats">
+            黑格子 k = <span id="mixedColorCount">0</span>
+        </div>
+        
+        <div class="grid-container" id="gridContainer"></div>
+
+        <br>
+        <div style="text-align: center;">
+            k = 2m-n
+        </div>
+    </div>
+
+    <script>
+        const gridSlider = document.getElementById('gridSlider');
+        const colorSlider = document.getElementById('colorSlider');
+        const gridContainer = document.getElementById('gridContainer');
+        const gridCount = document.getElementById('gridCount');
+        const colorCount = document.getElementById('colorCount');
+        const mixedColorCount = document.getElementById('mixedColorCount');
+
+        function updateGrid() {
+            const count = parseInt(gridSlider.value);
+            const colorNum = parseInt(colorSlider.value);
+            let mixedCount = 0;
+            
+            // 更新显示
+            gridCount.textContent = count;
+            colorCount.textContent = colorNum;
+            
+            // 更新滑块最大值
+            colorSlider.max = count;
+            
+            // 确保染色数量不超过总数量
+            if (colorNum > count) {
+                colorSlider.value = count;
+                colorCount.textContent = count;
+            }
+            
+            gridContainer.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                
+                // 检查是否被左侧染色
+                const isLeftColored = i < colorNum;
+                // 检查是否被右侧染色
+                const isRightColored = i >= (count - colorNum);
+                
+                // 设置颜色
+                if (isLeftColored && isRightColored) {
+                    gridItem.classList.add('mixed-color');
+                    mixedCount++;
+                } else if (isLeftColored) {
+                    gridItem.classList.add('left-color');
+                } else if (isRightColored) {
+                    gridItem.classList.add('right-color');
+                }
+                
+                gridContainer.appendChild(gridItem);
+            }
+            
+            // 更新混合色数量
+            mixedColorCount.textContent = mixedCount;
+        }
+
+        gridSlider.addEventListener('input', updateGrid);
+        colorSlider.addEventListener('input', updateGrid);
+        updateGrid();
+    </script>
+</body>
+</html>
